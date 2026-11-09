@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MPI K3 – Video Editor | BLKK Al Ishlah Gorontalo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --deep:#043d38; --teal:#0f766e; --emerald:#047857; --mint:#d1fae5; --mint2:#ecfdf5;
+  --gold:#d4a017; --gold2:#f5c542; --goldl:#fff3c4; --cream:#fffdf5;
+  --ink:#10312e; --muted:#5b7773; --red:#dc2626; --green:#16a34a; --line:#cfe7e1;
+  --shadow:0 10px 30px rgba(4,61,56,.14);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Poppins','Segoe UI',system-ui,sans-serif;color:var(--ink);
+  background:radial-gradient(1200px 600px at 10% -10%,#a7f3d0 0,transparent 60%),radial-gradient(900px 500px at 100% 0,#fde68a 0,transparent 55%),linear-gradient(180deg,#ecfdf5,#fffdf5);
+  min-height:100vh;line-height:1.55}
+.screen{display:none;min-height:100vh;padding:18px 14px 40px;animation:fade .4s ease}
+.screen.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.wrap{max-width:980px;margin:0 auto}
+.narrow{max-width:640px;margin:0 auto}
+h1,h2,h3{margin:0 0 .4em;line-height:1.25}
+.btn{font:inherit;font-weight:600;border:0;border-radius:14px;padding:12px 20px;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:linear-gradient(135deg,var(--emerald),var(--teal));color:#fff;box-shadow:0 6px 16px rgba(4,120,87,.35)}
+.btn-gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#3b2a00;box-shadow:0 6px 16px rgba(212,160,23,.4)}
+.btn-ghost{background:#fff;color:var(--teal);border:2px solid var(--line)}
+.btn-ghost:hover{border-color:var(--teal)}
+.btn[disabled]{opacity:.45;cursor:not-allowed;box-shadow:none}
+.card{background:#fff;border-radius:22px;box-shadow:var(--shadow);padding:22px;border:1px solid var(--line)}
+.muted{color:var(--muted)} .small{font-size:.85rem}
+.badge{display:inline-block;padding:6px 14px;border-radius:999px;font-weight:600;font-size:.82rem}
+.badge-gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#3b2a00}
+.badge-teal{background:var(--mint);color:var(--deep)}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.progress{height:10px;background:var(--mint);border-radius:99px;overflow:hidden;flex:1;min-width:120px}
+.progress>i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--emerald));border-radius:99px;transition:width .4s}
+
+/* COVER */
+#s-cover{background:linear-gradient(160deg,var(--deep),var(--teal) 55%,var(--emerald));color:#fff;display:none}
+#s-cover.active{display:flex;align-items:center;justify-content:center}
+.cover-box{max-width:820px;width:100%;text-align:center}
+.cover-box h1{font-size:clamp(1.35rem,4.2vw,2.2rem);font-weight:800;margin:10px 0 12px;text-shadow:0 2px 10px rgba(0,0,0,.25)}
+.cover-box .badge{margin:4px}
+.cover-svg{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:24px;padding:8px;margin:14px auto;max-width:700px}
+.cover-svg svg{width:100%;height:auto;display:block}
+.tip{min-height:28px;color:var(--goldl);font-weight:500;font-size:.9rem;margin:2px 0 12px}
+.cover-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.cover-actions .btn{flex:1 1 180px;max-width:260px}
+.btn-start{font-size:1.1rem;animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,197,66,.6)}50%{box-shadow:0 0 0 14px rgba(245,197,66,0)}}
+
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(2,30,27,.65);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:14px;z-index:50}
+.modal.open{display:flex;animation:fade .25s}
+.modal-card{background:#fff;color:var(--ink);border-radius:24px;max-width:560px;width:100%;max-height:88vh;overflow:auto;padding:24px;box-shadow:0 30px 70px rgba(0,0,0,.4);border-top:6px solid var(--gold);animation:pop .3s}
+@keyframes pop{from{transform:scale(.92);opacity:0}to{transform:none;opacity:1}}
+.modal-card h2{color:var(--teal)}
+.avatar{width:120px;height:120px;border-radius:50%;margin:0 auto 12px;position:relative;border:5px solid var(--gold);box-shadow:0 0 0 5px var(--mint),var(--shadow);overflow:hidden;background:linear-gradient(135deg,var(--teal),var(--emerald));display:flex;align-items:center;justify-content:center;color:#fff;font-size:2.4rem;font-weight:700}
+.avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.info-row{display:flex;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line)}
+.info-row b{min-width:118px;color:var(--teal);font-size:.88rem}
+.tp-list{padding-left:0;list-style:none;margin:0}
+.tp-list li{padding:8px 12px;margin:6px 0;background:var(--mint2);border-left:4px solid var(--gold);border-radius:10px;font-size:.93rem}
+.tp-list li.head{background:var(--teal);color:#fff;border-left-color:var(--gold2);font-weight:600}
+
+/* FORM */
+.field{margin-bottom:16px}
+.field label{display:block;font-weight:600;margin-bottom:6px;color:var(--teal)}
+.field input,.field textarea{width:100%;font:inherit;padding:13px 14px;border:2px solid var(--line);border-radius:14px;outline:0;background:#fff}
+.field input:focus,.field textarea:focus{border-color:var(--teal);box-shadow:0 0 0 4px rgba(15,118,110,.12)}
+.field.err input{border-color:var(--red)}
+.err-msg{color:var(--red);font-size:.84rem;margin-top:5px;display:none}
+.field.err .err-msg{display:block}
+
+/* GUIDE */
+.guide-ico{font-size:3.2rem;text-align:center}
+.dots{display:flex;gap:6px;justify-content:center;margin:12px 0}
+.dots i{width:9px;height:9px;border-radius:50%;background:var(--line)} .dots i.on{background:var(--gold);width:24px;border-radius:9px}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+
+/* MENU */
+.hero{text-align:center;margin-bottom:18px}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.mcard{position:relative;border-radius:24px;padding:24px 20px;text-align:center;cursor:pointer;background:#fff;border:2px solid var(--line);box-shadow:var(--shadow);transition:.25s}
+.mcard:hover{transform:translateY(-4px)}
+.mcard .ic{font-size:3rem}
+.mcard.locked{background:#eef2f1;filter:grayscale(.7);cursor:not-allowed}
+.mcard.open{border-color:var(--gold);background:linear-gradient(180deg,#fff,var(--goldl))}
+.mcard.done{border-color:var(--green)}
+.lock{position:absolute;top:12px;right:14px;font-size:1.5rem}
+.stat{display:inline-block;margin-top:8px;font-size:.82rem;font-weight:600;padding:4px 12px;border-radius:99px;background:var(--mint);color:var(--deep)}
+
+/* BELAJAR */
+.sec{margin:14px 0;padding:14px 16px;border-radius:16px;background:var(--mint2);border:1px solid var(--line)}
+.sec h3{font-size:1rem;color:var(--teal)}
+.sec ul{margin:6px 0 0;padding-left:20px} .sec li{margin:4px 0}
+.local{background:linear-gradient(135deg,#e0f2fe,#ecfdf5);border-color:#bae6fd}
+.ayat{background:linear-gradient(160deg,var(--deep),var(--teal));color:#fff;border-radius:20px;padding:18px;margin:14px 0;border:2px solid var(--gold)}
+.ayat .ar{font-family:'Amiri','Scheherazade New','Traditional Arabic',serif;font-size:clamp(1.5rem,5vw,2.1rem);line-height:2.1;text-align:center;direction:rtl;color:var(--goldl);margin:6px 0}
+.ayat .ref{text-align:center;font-weight:600;color:var(--gold2);font-size:.9rem}
+.ayat .tr{font-style:italic;margin:8px 0}
+.ayat .hk{background:rgba(255,255,255,.12);border-radius:12px;padding:10px 12px;font-size:.9rem}
+.act{border:2px dashed var(--gold);background:#fffbea;border-radius:18px;padding:16px;margin-top:14px}
+.act h3{color:#8a6500}
+.opt{display:block;width:100%;text-align:left;font:inherit;padding:12px 14px;margin:8px 0;border-radius:14px;border:2px solid var(--line);background:#fff;cursor:pointer;transition:.15s}
+.opt:hover{border-color:var(--teal)}
+.opt.sel{border-color:var(--teal);background:var(--mint)}
+.opt.good{border-color:var(--green);background:#dcfce7}
+.opt.bad{border-color:var(--red);background:#fee2e2}
+.opt[disabled]{cursor:default}
+.fb{margin-top:10px;padding:10px 14px;border-radius:12px;font-size:.92rem;display:none}
+.fb.show{display:block}
+.fb.ok{background:#dcfce7;color:#14532d;border:1px solid #86efac}
+.fb.no{background:#fee2e2;color:#7f1d1d;border:1px solid #fca5a5}
+.fb.info{background:#fef9c3;color:#713f12;border:1px solid #fde047}
+
+/* DROP / WIDGETS */
+.pool{display:flex;flex-wrap:wrap;gap:8px;min-height:54px;padding:10px;border-radius:14px;background:#fff;border:2px dashed var(--line);margin-bottom:12px}
+.chip{padding:9px 13px;border-radius:12px;background:linear-gradient(135deg,#fff,var(--mint));border:2px solid var(--teal);font-size:.88rem;cursor:grab;user-select:none;transition:.15s;touch-action:manipulation}
+.chip.sel{background:var(--gold2);border-color:var(--gold);transform:scale(1.05);box-shadow:0 4px 12px rgba(212,160,23,.5)}
+.chip.ok{background:#dcfce7;border-color:var(--green)} .chip.bad{background:#fee2e2;border-color:var(--red)}
+.buckets{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.bucket{border-radius:16px;border:2px solid var(--teal);background:#fff;overflow:hidden;cursor:pointer}
+.bucket.over{background:var(--goldl)}
+.bucket-title{background:var(--teal);color:#fff;padding:8px 12px;font-weight:600;font-size:.9rem;text-align:center}
+.bucket-zone{min-height:84px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start}
+.locked-w{pointer-events:none;opacity:.92}
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;margin:8px 0;padding:10px;background:#fff;border-radius:12px;border:1px solid var(--line)}
+.mrow select{font:inherit;padding:10px;border-radius:10px;border:2px solid var(--line);width:100%;background:#fff}
+@media(max-width:520px){.mrow{grid-template-columns:1fr}}
+.seq{padding-left:0;list-style:none;margin:0;counter-reset:n}
+.seq li{counter-increment:n;padding:10px 12px 10px 46px;margin:6px 0;background:var(--mint);border-radius:12px;position:relative;cursor:pointer;border:2px solid var(--teal);font-size:.9rem}
+.seq li::before{content:counter(n);position:absolute;left:10px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:var(--gold);color:#3b2a00;font-weight:700;display:flex;align-items:center;justify-content:center}
+
+/* GAME & LATIH */
+.stim{background:linear-gradient(135deg,#fff7d6,#ecfdf5);border-left:5px solid var(--gold);border-radius:14px;padding:14px 16px;margin:12px 0;font-size:.95rem}
+.stim h4{margin:0 0 6px;color:#8a6500}
+.lvl{display:inline-block;padding:4px 12px;border-radius:99px;font-size:.78rem;font-weight:700;color:#fff}
+.lv1{background:var(--emerald)} .lv2{background:#d97706} .lv3{background:#b91c1c}
+.score-pill{background:var(--goldl);color:#6b4e00;font-weight:700;padding:6px 14px;border-radius:99px}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:14px 0}
+.rbox{text-align:center;padding:16px;border-radius:18px;background:var(--mint2);border:1px solid var(--line)}
+.rbox .n{font-size:2rem;font-weight:800;color:var(--teal)}
+.review{margin:10px 0;padding:12px 14px;border-radius:14px;border-left:5px solid var(--line);background:#fff;font-size:.9rem}
+.review.ok{border-left-color:var(--green)} .review.no{border-left-color:var(--red)}
+
+/* REPORT */
+.sheet{background:#fff;max-width:820px;margin:0 auto;padding:30px;border-radius:12px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.kop{display:flex;align-items:center;gap:16px;border-bottom:4px double var(--teal);padding-bottom:12px;margin-bottom:14px}
+.kop .logo{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--emerald));color:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;border:3px solid var(--gold);flex:none}
+.kop h2{margin:0;color:var(--deep);font-size:1.25rem} .kop p{margin:2px 0;font-size:.82rem;color:var(--muted)}
+.sheet table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.92rem}
+.sheet th,.sheet td{border:1px solid #9bbfb8;padding:8px 10px;text-align:left}
+.sheet th{background:var(--mint)}
+.sheet td.c,.sheet th.c{text-align:center}
+.note-box{border:1px dotted var(--teal);border-radius:10px;padding:10px 12px;min-height:70px;outline:0;font-size:.92rem}
+.sign{display:flex;justify-content:space-between;gap:20px;margin-top:26px;font-size:.9rem}
+.sign div{text-align:center;flex:1}
+.sign .sp{height:62px}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(30px);background:var(--deep);color:#fff;padding:12px 20px;border-radius:14px;opacity:0;transition:.3s;z-index:99;max-width:90vw;text-align:center;font-size:.92rem;border:1px solid var(--gold);pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:480px){.card{padding:16px}.sheet{padding:16px}.btn{padding:11px 14px}}
+@media print{
+  body{background:#fff}
+  .screen{display:none!important}
+  #s-report{display:block!important;padding:0;min-height:0}
+  .no-print{display:none!important}
+  .sheet{box-shadow:none;border:none;max-width:100%;padding:0}
+  .note-box{border:1px solid #999}
+  @page{size:A4;margin:14mm}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= COVER ================= -->
+<section id="s-cover" class="screen active">
+  <div class="cover-box">
+    <span class="badge badge-gold">🎬 Video Editor - BLKK Al Ishlah Gorontalo</span>
+    <h1>Melaksanakan prosedur Keselamatan dan Kesehatan Kerja (K3) ditempat kerja</h1>
+    <div class="cover-svg">
+      <svg viewBox="0 0 640 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustrasi ruang editing dengan perisai K3, APAR dan kotak P3K">
+        <defs>
+          <linearGradient id="gBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b5f58"/><stop offset="1" stop-color="#043d38"/></linearGradient>
+          <linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5c542"/><stop offset="1" stop-color="#d4a017"/></linearGradient>
+        </defs>
+        <rect width="640" height="330" rx="18" fill="url(#gBg)"/>
+        <circle cx="560" cy="48" r="26" fill="#f5c542" opacity=".9"><animate attributeName="r" values="26;29;26" dur="4s" repeatCount="indefinite"/></circle>
+        <g opacity=".25" fill="#fff"><circle cx="80" cy="40" r="2"/><circle cx="200" cy="25" r="1.6"/><circle cx="330" cy="38" r="2"/><circle cx="440" cy="20" r="1.5"/></g>
+        <!-- waves Teluk Tomini -->
+        <g>
+          <path d="M-640 290 q40 -16 80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 V330 H-640Z" fill="#14b8a6" opacity=".45"><animateTransform attributeName="transform" type="translate" from="0 0" to="320 0" dur="9s" repeatCount="indefinite"/></path>
+          <path d="M-640 304 q40 -14 80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 t80 0 V330 H-640Z" fill="#0f766e" opacity=".7"><animateTransform attributeName="transform" type="translate" from="0 0" to="-320 0" dur="12s" repeatCount="indefinite"/></path>
+        </g>
+        <!-- cable -->
+        <path d="M300 238 C300 285 190 270 140 300" stroke="#f5c542" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="10 8"><animate attributeName="stroke-dashoffset" from="0" to="-36" dur="2s" repeatCount="indefinite"/></path>
+        <!-- monitor -->
+        <g data-tip="🖥️ Ruang editing: posisikan monitor sejajar mata, jarak ±50–70 cm.">
+          <rect x="170" y="58" width="300" height="175" rx="14" fill="#0a1f1d" stroke="url(#gGold)" stroke-width="4"/>
+          <rect x="184" y="72" width="272" height="116" rx="8" fill="#12332f"/>
+          <rect x="196" y="82" width="110" height="66" rx="6" fill="#0f766e"/>
+          <polygon points="236,100 236,130 262,115" fill="#fff"/>
+          <rect x="316" y="82" width="128" height="30" rx="4" fill="#134e4a"/><rect x="316" y="118" width="128" height="30" rx="4" fill="#134e4a"/>
+          <rect x="196" y="156" width="70" height="10" rx="3" fill="#f5c542"/><rect x="270" y="156" width="110" height="10" rx="3" fill="#14b8a6"/><rect x="384" y="156" width="56" height="10" rx="3" fill="#d4a017"/>
+          <rect x="196" y="170" width="120" height="10" rx="3" fill="#34d399"/><rect x="320" y="170" width="90" height="10" rx="3" fill="#f5c542"/>
+          <rect x="196" y="194" width="248" height="4" fill="none"/>
+          <line x1="196" y1="150" x2="196" y2="184" stroke="#fff" stroke-width="2.5"><animateTransform attributeName="transform" type="translate" values="0 0;248 0;0 0" dur="7s" repeatCount="indefinite"/></line>
+          <rect x="300" y="233" width="40" height="14" fill="#0a1f1d"/><rect x="270" y="246" width="100" height="10" rx="5" fill="#0a1f1d"/>
+        </g>
+        <!-- shield -->
+        <g data-tip="🛡️ K3 = Keselamatan dan Kesehatan Kerja: aman, sehat, produktif." style="cursor:pointer">
+          <g><animateTransform attributeName="transform" type="scale" values="1;1.06;1" dur="2.4s" repeatCount="indefinite" additive="sum"/>
+          <path d="M82 96 L132 112 V160 C132 192 108 212 82 224 C56 212 32 192 32 160 V112 Z" fill="url(#gGold)" stroke="#fff" stroke-width="3" transform="translate(0,6)"/>
+          <path d="M60 164 L78 182 L108 144" stroke="#043d38" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round" transform="translate(0,6)"/></g>
+        </g>
+        <!-- extinguisher -->
+        <g data-tip="🧯 APAR: Tarik pin – Arahkan ke pangkal api – Tekan tuas – Sapu." style="cursor:pointer">
+          <rect x="520" y="130" width="52" height="110" rx="14" fill="#dc2626" stroke="#fff" stroke-width="3"/>
+          <rect x="534" y="112" width="24" height="22" rx="4" fill="#374151"/>
+          <path d="M558 118 q28 -6 32 22" stroke="#374151" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <rect x="524" y="165" width="44" height="30" rx="4" fill="#fff"/><text x="546" y="186" font-size="14" font-weight="700" text-anchor="middle" fill="#dc2626">APAR</text>
+        </g>
+        <!-- first aid -->
+        <g data-tip="⛑️ Kotak P3K: pertolongan pertama untuk luka ringan sebelum bantuan medis." style="cursor:pointer">
+          <rect x="478" y="262" width="62" height="44" rx="8" fill="#fff" stroke="#16a34a" stroke-width="3"/>
+          <rect x="503" y="270" width="12" height="28" fill="#dc2626"/><rect x="494" y="278" width="30" height="12" fill="#dc2626"/>
+        </g>
+        <!-- plug / spark -->
+        <g data-tip="⚡ Jangan bebani stop kontak berlebihan: cek kabel & daya sebelum menyalakan perangkat." style="cursor:pointer">
+          <circle cx="100" cy="270" r="22" fill="#fff" opacity=".12"/>
+          <path d="M104 252 L90 274 H100 L94 292 L112 266 H101 Z" fill="#f5c542"><animate attributeName="opacity" values="1;.4;1" dur="1.3s" repeatCount="indefinite"/></path>
+        </g>
+      </svg>
+    </div>
+    <div class="tip" id="coverTip">Ketuk gambar untuk mengenal alat K3 ✨</div>
+    <div class="cover-actions">
+      <button class="btn btn-ghost" id="btnDev">👤 Informasi Pengembang</button>
+      <button class="btn btn-ghost" id="btnTP">🎯 Tujuan Pembelajaran</button>
+      <button class="btn btn-gold btn-start" id="btnStart">▶ MULAI</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FORM ================= -->
+<section id="s-form" class="screen">
+  <div class="narrow">
+    <div class="card">
+      <div class="guide-ico">📝</div>
+      <h2 style="text-align:center;color:var(--teal)">Identitas Peserta</h2>
+      <p class="muted" style="text-align:center">Isi identitasmu untuk memulai dan untuk laporan hasil belajar.</p>
+      <form id="frmId" novalidate>
+        <div class="field" id="fNama"><label for="inNama">Nama Lengkap</label>
+          <input id="inNama" type="text" autocomplete="name" placeholder="Contoh: Rizal Pomalingo" maxlength="60">
+          <div class="err-msg" id="eNama">Nama lengkap wajib diisi (minimal 3 huruf).</div></div>
+        <div class="field" id="fKelas"><label for="inKelas">Kelas / Angkatan</label>
+          <input id="inKelas" type="text" placeholder="Contoh: Video Editor Angkatan 1" maxlength="40">
+          <div class="err-msg" id="eKelas">Kelas / angkatan wajib diisi.</div></div>
+        <div class="nav"><button type="button" class="btn btn-ghost" id="formBack">← Cover</button>
+        <button type="submit" class="btn btn-primary">Lanjut →</button></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GUIDE ================= -->
+<section id="s-guide" class="screen">
+  <div class="narrow"><div class="card" id="guideCard"></div></div>
+</section>
+
+<!-- ================= MENU ================= -->
+<section id="s-menu" class="screen">
+  <div class="wrap">
+    <div class="hero">
+      <span class="badge badge-gold">Menu Utama</span>
+      <h2 style="margin-top:10px;color:var(--deep)" id="menuHello">Halo!</h2>
+      <p class="muted">Selesaikan tiga tahap secara berurutan: Belajar → Bermain → Berlatih.</p>
+    </div>
+    <div class="menu-grid" id="menuGrid"></div>
+    <div style="text-align:center;margin-top:20px" id="menuExtra"></div>
+  </div>
+</section>
+
+<!-- ================= BELAJAR ================= -->
+<section id="s-belajar" class="screen">
+  <div class="wrap">
+    <div class="topbar"><button class="btn btn-ghost" data-menu>☰ Menu</button>
+      <div class="progress"><i id="bProg"></i></div><span class="badge badge-teal" id="bCount"></span></div>
+    <div class="card" id="bCard"></div>
+  </div>
+</section>
+
+<!-- ================= BERMAIN ================= -->
+<section id="s-bermain" class="screen">
+  <div class="wrap">
+    <div class="topbar"><button class="btn btn-ghost" data-menu>☰ Menu</button>
+      <div class="progress"><i id="gProg"></i></div><span class="score-pill" id="gScore">Skor 0</span></div>
+    <div class="card" id="gCard"></div>
+  </div>
+</section>
+
+<!-- ================= BERLATIH ================= -->
+<section id="s-berlatih" class="screen">
+  <div class="wrap">
+    <div class="topbar"><button class="btn btn-ghost" data-menu>☰ Menu</button>
+      <div class="progress"><i id="lProg"></i></div><span class="badge badge-teal" id="lCount"></span></div>
+    <div class="card" id="lCard"></div>
+  </div>
+</section>
+
+<!-- ================= REPORT ================= -->
+<section id="s-report" class="screen">
+  <div class="wrap">
+    <div class="no-print" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:14px">
+      <button class="btn btn-gold" id="btnPrint">🖨️ Cetak / Unduh Laporan PDF</button>
+      <button class="btn btn-ghost" data-menu>☰ Kembali ke Menu</button>
+    </div>
+    <div class="sheet" id="sheet"></div>
+    <p class="no-print muted small" style="text-align:center">Tip: pada jendela cetak, pilih “Simpan sebagai PDF”. Catatan guru dapat kamu ketuk dan ubah sebelum dicetak.</p>
+  </div>
+</section>
+
+<div class="modal" id="modal"><div class="modal-card" id="modalCard"></div></div>
+<div id="toast"></div>
+
+<!-- ================= DATA ================= -->
+<script>
+const BELAJAR=[
+{t:'Memahami K3 di Ruang Editing',ico:'🛡️',
+ konsep:`<p><b>K3</b> adalah <b>Keselamatan dan Kesehatan Kerja</b>, yaitu upaya melindungi pekerja agar terhindar dari <b>kecelakaan kerja</b> dan <b>penyakit akibat kerja (PAK)</b> sehingga pekerjaan berjalan aman, sehat, dan produktif.</p>
+ <ul><li><b>Keselamatan kerja</b>: bebas dari kejadian mendadak seperti tersengat listrik, terjatuh, atau kebakaran.</li>
+ <li><b>Kesehatan kerja</b>: bebas dari gangguan yang muncul pelan-pelan, misalnya mata kering, nyeri leher, dan nyeri punggung.</li>
+ <li><b>Tiga unsur yang dilindungi</b>: manusia (editor), peralatan (komputer, kamera, kabel), dan lingkungan kerja.</li>
+ <li><b>Tujuan</b>: mencegah cedera, menjaga peralatan, dan memastikan proyek video selesai tanpa gangguan.</li></ul>
+ <p>Ruang editing tampak “aman”, tetapi menyimpan risiko: banyak kabel, beban listrik tinggi, duduk lama, dan paparan layar berjam-jam. Karena itu K3 perlu dijelaskan dan dipahami <i>sebelum</i> bekerja (sesuai pedoman K3).</p>`,
+ lokal:`Gorontalo bercuaca panas dan lembap karena dekat Teluk Tomini. Hujan deras mendadak dapat membuat listrik berkedip atau padam, sehingga komputer yang sedang menyimpan proyek berisiko rusak. Santri dan peserta pelatihan yang bekerja sampai larut malam menyelesaikan video dokumenter Danau Limboto juga rentan lelah dan kurang tidur.`,
+ ayat:{ref:'QS. Al-Baqarah [2]: 195 (bagian akhir)',ar:'وَلَا تُلْقُوا بِأَيْدِيكُمْ إِلَى التَّهْلُكَةِ ۛ وَأَحْسِنُوا ۛ إِنَّ اللَّهَ يُحِبُّ الْمُحْسِنِينَ',
+  id:'“…dan janganlah kamu jatuhkan (diri sendiri) ke dalam kebinasaan dengan tangan sendiri, dan berbuat baiklah. Sungguh, Allah menyukai orang-orang yang berbuat baik.” (Terjemah Kemenag RI)',
+  hikmah:'Mencegah diri dari bahaya adalah perintah agama. Mengabaikan kabel terkelupas atau bekerja tanpa jeda sama dengan menjatuhkan diri ke dalam bahaya. K3 adalah wujud nyata “ihsan” (berbuat baik) kepada diri sendiri dan orang lain.'},
+ act:{type:'quiz',q:'Manakah contoh PENYAKIT AKIBAT KERJA pada seorang editor video?',
+  opts:['Tersandung kabel yang melintang di lantai','Mata kering dan nyeri leher karena menatap layar terlalu lama','Laptop terjatuh dari meja','Stop kontak terbakar karena korsleting'],ans:1,
+  ok:'Tepat! Gangguan yang muncul perlahan akibat kebiasaan kerja disebut penyakit akibat kerja.',no:'Belum tepat. Itu kejadian mendadak (kecelakaan). Penyakit akibat kerja muncul perlahan.'}},
+
+{t:'Dasar Hukum, Hak & Kewajiban',ico:'⚖️',
+ konsep:`<p>Perlindungan K3 memiliki dasar hukum yang jelas di Indonesia:</p>
+ <ul><li><b>UU No. 1 Tahun 1970</b> tentang Keselamatan Kerja, berlaku di semua tempat kerja.</li>
+ <li><b>UU No. 13 Tahun 2003</b> tentang Ketenagakerjaan, Pasal 86: setiap pekerja berhak atas perlindungan K3.</li>
+ <li><b>PP No. 50 Tahun 2012</b> tentang Sistem Manajemen K3 (SMK3).</li>
+ <li><b>Permenaker No. 5 Tahun 2018</b> tentang K3 Lingkungan Kerja (pencahayaan, kebisingan, suhu, dan sebagainya).</li></ul>
+ <p><b>Hak pekerja</b>: memperoleh perlindungan dan pelatihan K3, serta menyatakan keberatan bila kondisi kerja membahayakan. <b>Kewajiban pekerja</b>: mematuhi prosedur kerja aman dan memakai alat pelindung yang disediakan.</p>
+ <p><b>Hierarki pengendalian bahaya</b> (dari paling efektif): eliminasi → substitusi → rekayasa teknik → administrasi (aturan/rambu) → alat pelindung diri.</p>`,
+ lokal:`Di BLKK Al Ishlah, ruang editing diperlakukan sebagai tempat kerja sesungguhnya. Pedoman K3 ruang editing memuat aturan penggunaan listrik, jalur evakuasi, dan jadwal istirahat, sama pentingnya dengan aturan di bengkel atau pabrik.`,
+ ayat:{ref:'QS. An-Nisa [4]: 29 (bagian akhir)',ar:'وَلَا تَقْتُلُوا أَنْفُسَكُمْ ۚ إِنَّ اللَّهَ كَانَ بِكُمْ رَحِيمًا',
+  id:'“…dan janganlah kamu membunuh dirimu. Sungguh, Allah Maha Penyayang kepadamu.” (Terjemah Kemenag RI)',
+  hikmah:'Larangan menyakiti diri mencakup kelalaian yang membahayakan jiwa. Aturan K3 adalah bentuk kasih sayang yang dikodifikasi: menjaga jiwa (hifzh an-nafs) adalah tujuan utama syariat.'},
+ act:{type:'drop',q:'Seret/ketuk kartu ke kelompok yang tepat: HAK atau KEWAJIBAN pekerja.',cats:['Hak Pekerja','Kewajiban Pekerja'],
+  items:[{t:'Mendapat pelatihan K3',c:0},{t:'Memperoleh perlindungan keselamatan kerja',c:0},{t:'Menyatakan keberatan pada kondisi kerja berbahaya',c:0},{t:'Mematuhi prosedur kerja aman',c:1},{t:'Memakai alat pelindung yang disediakan',c:1},{t:'Menjaga kebersihan area kerja',c:1}],
+  ok:'Hebat! Hak dan kewajiban K3 berjalan beriringan.'}},
+
+{t:'Mengenali Bahaya & Risiko',ico:'⚠️',
+ konsep:`<p><b>Bahaya (hazard)</b> adalah sumber yang berpotensi menimbulkan cedera atau kerusakan. <b>Risiko</b> adalah kemungkinan bahaya itu benar-benar menimbulkan kerugian, dikalikan tingkat dampaknya.</p>
+ <ul><li><b>Listrik</b>: kabel terkelupas, colokan bertumpuk, terminal kelebihan beban, perangkat basah.</li>
+ <li><b>Kebakaran</b>: korsleting, kabel panas, penumpukan kardus dan kertas di dekat sumber listrik.</li>
+ <li><b>Ergonomi</b>: duduk membungkuk, kursi tidak sesuai, monitor terlalu rendah atau tinggi.</li>
+ <li><b>Fisik/lingkungan</b>: layar silau, suara headphone terlalu keras, ruangan panas dan pengap, lantai licin.</li>
+ <li><b>Psikososial</b>: tekanan tenggat proyek dan kurang tidur.</li></ul>
+ <p><b>Nilai risiko = Kemungkinan (1–5) × Dampak (1–5)</b>. Semakin tinggi nilainya, semakin dahulu ditangani.</p>`,
+ lokal:`Saat musim hujan, air dapat merembes ke lantai dekat stop kontak, dan di daerah dataran rendah sekitar Danau Limboto banjir kecil bisa terjadi. Udara pesisir yang lembap juga mempercepat karat dan membuat kabel serta konektor cepat rusak.`,
+ ayat:{ref:'QS. Al-Qasas [28]: 77 (bagian akhir)',ar:'وَأَحْسِنْ كَمَا أَحْسَنَ اللَّهُ إِلَيْكَ ۖ وَلَا تَبْغِ الْفَسَادَ فِي الْأَرْضِ ۖ إِنَّ اللَّهَ لَا يُحِبُّ الْمُفْسِدِينَ',
+  id:'“…dan berbuat baiklah (kepada orang lain) sebagaimana Allah telah berbuat baik kepadamu, dan janganlah kamu berbuat kerusakan di (muka) bumi. Sungguh, Allah tidak menyukai orang yang berbuat kerusakan.” (Terjemah Kemenag RI)',
+  hikmah:'Membiarkan bahaya berarti membuka jalan kerusakan (peralatan, kesehatan, bahkan jiwa). Mengidentifikasi bahaya lebih awal adalah bentuk tanggung jawab menjaga amanah tempat kerja.'},
+ act:{type:'quiz',q:'Kabel catu daya yang terkelupas di dekat lantai basah adalah contoh…',
+  opts:['Hazard (sumber bahaya) yang berisiko menyebabkan sengatan listrik','Kebiasaan baik karena kabelnya masih menyala','Bahaya ergonomi','Risiko yang tidak perlu ditangani'],ans:0,
+  ok:'Benar! Kabel terkelupas adalah hazard; kemungkinan tersengat adalah risikonya.',no:'Kurang tepat. Ingat: hazard = sumber bahaya, risiko = kemungkinan menjadi kerugian.'}},
+
+{t:'Ergonomi & Kesehatan Kerja Editor',ico:'🪑',
+ konsep:`<p><b>Ergonomi</b> adalah menyesuaikan pekerjaan dan peralatan dengan tubuh manusia agar nyaman dan tidak mudah cedera.</p>
+ <ul><li><b>Posisi duduk</b>: punggung bersandar, kaki rata di lantai, siku sekitar 90°, pergelangan tangan lurus.</li>
+ <li><b>Monitor</b>: bagian atas layar sejajar atau sedikit di bawah mata, jarak ±50–70 cm, hindari silau dari jendela.</li>
+ <li><b>Aturan 20-20-20</b>: setiap 20 menit, pandang objek ±6 meter selama 20 detik.</li>
+ <li><b>Peregangan</b>: leher, bahu, dan pergelangan tangan tiap 1–2 jam; minum air putih secukupnya.</li>
+ <li><b>Pendengaran</b>: volume headphone secukupnya (pedoman populer: tidak lebih dari ±60% dan tidak terus-menerus).</li></ul>`,
+ lokal:`Siang di Gorontalo sering terik, sehingga sinar matahari yang masuk lewat jendela membuat layar silau. Gunakan tirai dan posisi meja yang tidak berhadapan langsung dengan jendela. Santri juga dianjurkan tidak begadang berlebihan karena kurang tidur menurunkan konsentrasi saat memotong klip video.`,
+ ayat:{ref:'QS. Al-A\u2019raf [7]: 31 (bagian akhir)',ar:'وَكُلُوا وَاشْرَبُوا وَلَا تُسْرِفُوا ۚ إِنَّهُ لَا يُحِبُّ الْمُسْرِفِينَ',
+  id:'“…makan dan minumlah, tetapi jangan berlebihan. Sungguh, Allah tidak menyukai orang yang berlebih-lebihan.” (Terjemah Kemenag RI)',
+  hikmah:'Prinsip tidak berlebihan (i\u2019tidal) berlaku juga pada kerja: bekerja tanpa jeda, begadang, dan mengabaikan makan-minum merusak tubuh. Tubuh punya hak atas istirahat.'},
+ act:{type:'drop',q:'Kelompokkan kondisi kerja berikut: sudah ERGONOMIS atau PERLU DIPERBAIKI.',cats:['Sudah Ergonomis','Perlu Diperbaiki'],
+  items:[{t:'Punggung bersandar pada kursi',c:0},{t:'Monitor sejajar pandangan mata',c:0},{t:'Siku membentuk sudut ±90°',c:0},{t:'Layar menghadap jendela hingga silau',c:1},{t:'Menunduk ke layar laptop 4 jam',c:1},{t:'Kaki menggantung tanpa pijakan',c:1}],
+  ok:'Bagus! Kamu sudah bisa menilai ergonomi dengan tepat.'}},
+
+{t:'Alat & Sarana K3 yang Dipersiapkan',ico:'🧯',
+ konsep:`<p>Sarana K3 harus <b>dipersiapkan sebelum</b> pekerjaan dimulai, diperiksa berkala, dan diketahui letaknya oleh semua orang.</p>
+ <ul><li><b>APAR</b> (Alat Pemadam Api Ringan): gunakan tipe yang cocok untuk api listrik (CO₂ atau serbuk kering), cek tekanan dan masa berlaku.</li>
+ <li><b>Kotak P3K</b>: plester, kasa steril, perban, antiseptik, gunting, sarung tangan; isi dicek rutin.</li>
+ <li><b>Pengaman listrik</b>: MCB, grounding, stabilizer atau UPS, serta terminal berpengaman beban.</li>
+ <li><b>Penata kabel</b>: cable cover, cable ties, kabel dengan kualitas baik.</li>
+ <li><b>Rambu & jalur evakuasi</b>: tanda keluar, rambu larangan, dan jalur bebas hambatan.</li>
+ <li><b>Sarana ergonomi dan kesehatan</b>: kursi ergonomis, ventilasi atau AC terawat, pencahayaan cukup, tempat sampah.</li></ul>
+ <p>Gunakan <b>daftar periksa (checklist)</b> untuk memastikan setiap sarana tersedia, berfungsi, dan mudah dijangkau.</p>`,
+ lokal:`Pemadaman listrik bergilir atau gangguan saat hujan di Gorontalo membuat UPS sangat berguna: proyek video tidak hilang ketika listrik padam tiba-tiba. Rambu evakuasi juga perlu diletakkan jelas karena ruang editing biasanya gelap dan tertutup tirai.`,
+ ayat:{ref:'QS. Al-Hasyr [59]: 18',ar:'يَا أَيُّهَا الَّذِينَ آمَنُوا اتَّقُوا اللَّهَ وَلْتَنْظُرْ نَفْسٌ مَا قَدَّمَتْ لِغَدٍ ۖ وَاتَّقُوا اللَّهَ ۚ إِنَّ اللَّهَ خَبِيرٌ بِمَا تَعْمَلُونَ',
+  id:'“Wahai orang-orang yang beriman! Bertakwalah kepada Allah dan hendaklah setiap orang memperhatikan apa yang telah diperbuatnya untuk hari esok (akhirat), dan bertakwalah kepada Allah. Sungguh, Allah Maha Teliti terhadap apa yang kamu kerjakan.” (Terjemah Kemenag RI)',
+  hikmah:'Perencanaan dan persiapan adalah bagian dari ketakwaan. Menyiapkan APAR, P3K, dan checklist sebelum terjadi masalah adalah wujud “memperhatikan apa yang disiapkan untuk esok”.'},
+ act:{type:'quiz',q:'Sarana apa yang menjaga proyek video tidak hilang saat listrik padam mendadak?',
+  opts:['Rambu jalur evakuasi','UPS (sumber daya cadangan)','Kotak P3K','Tempat sampah'],ans:1,
+  ok:'Tepat! UPS memberi waktu untuk menyimpan proyek dan mematikan perangkat dengan aman.',no:'Belum tepat. Cari sarana yang menyuplai listrik cadangan sesaat.'}},
+
+{t:'Prosedur K3 Sehari-hari (SOP Ruang Editing)',ico:'📋',
+ konsep:`<p>Menerapkan K3 berarti menjalankan prosedur secara konsisten:</p>
+ <ul><li><b>Sebelum kerja</b>: berdoa, periksa kondisi ruangan, periksa kabel dan stop kontak, atur kursi, monitor, serta pencahayaan.</li>
+ <li><b>Saat kerja</b>: nyalakan perangkat sesuai urutan, jangan menumpuk colokan, ikuti aturan 20-20-20, minum air putih, dan segera laporkan bau gosong atau kabel panas.</li>
+ <li><b>Sesudah kerja</b>: simpan proyek, matikan perangkat sesuai urutan, cabut perangkat yang tidak dipakai, rapikan kabel, dan bersihkan meja.</li>
+ <li><b>Aturan khusus</b>: makanan dan minuman dijauhkan dari perangkat, jalur evakuasi bebas barang, serta tidak memperbaiki listrik tanpa wewenang.</li></ul>
+ <p>Prosedur tertulis (SOP) membantu semua orang bekerja dengan cara yang sama dan aman.</p>`,
+ lokal:`Kebiasaan membawa es kelapa muda atau binte biluhuta saat istirahat boleh dinikmati, tetapi sebaiknya di area makan, bukan di samping keyboard. Selesai kerja, kabel yang dibiarkan berserakan mudah tersangkut dan digigit tikus di bangunan lembap.`,
+ ayat:{ref:'QS. Al-Ma\u2019idah [5]: 2 (bagian awal)',ar:'وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ ۖ وَلَا تَعَاوَنُوا عَلَى الْإِثْمِ وَالْعُدْوَانِ',
+  id:'“Dan tolong-menolonglah kamu dalam (mengerjakan) kebajikan dan takwa, dan jangan tolong-menolong dalam berbuat dosa dan permusuhan.” (Terjemah Kemenag RI)',
+  hikmah:'K3 adalah kerja bersama. Saling mengingatkan untuk mematuhi prosedur adalah tolong-menolong dalam kebaikan dan takwa, sedangkan membiarkan teman bekerja tidak aman adalah kelalaian bersama.'},
+ act:{type:'quiz',q:'Hal yang tepat dilakukan SESUDAH selesai bekerja di ruang editing adalah…',
+  opts:['Meninggalkan perangkat menyala agar render lanjut tanpa dicek','Menyimpan proyek, mematikan perangkat sesuai urutan, lalu merapikan kabel dan meja','Menumpuk kabel di bawah meja secara asal','Meninggalkan makanan di meja agar tidak repot'],ans:1,
+  ok:'Benar! Penutupan kerja yang rapi mencegah korsleting dan kerusakan.',no:'Belum tepat. Pikirkan: simpan, matikan, rapikan.'}},
+
+{t:'Kebersihan & Kesehatan Tempat Kerja',ico:'🧼',
+ konsep:`<p>Ruang editing yang bersih mencegah penyakit, memperpanjang umur perangkat, dan membuat orang betah bekerja. Standar sederhana yang dapat diterapkan adalah <b>5R</b>:</p>
+ <ul><li><b>Ringkas</b>: pisahkan barang perlu dan tidak perlu.</li><li><b>Rapi</b>: letakkan barang, kabel, dan alat pada tempatnya.</li>
+ <li><b>Resik</b>: bersihkan meja, keyboard, layar, dan lantai secara berkala.</li><li><b>Rawat</b>: pertahankan kondisi bersih dan periksa perangkat rutin.</li>
+ <li><b>Rajin</b>: jadikan kebiasaan dan teladan bagi teman.</li></ul>
+ <ul><li>Jaga <b>sirkulasi udara</b> (ventilasi, filter AC bersih) dan bersihkan debu pada ventilasi CPU.</li>
+ <li>Buang sampah pada tempatnya; jangan menyimpan makanan di dekat perangkat.</li>
+ <li>Bersihkan headphone dan keyboard yang dipakai bergantian; cuci tangan sebelum makan.</li></ul>`,
+ lokal:`Udara lembap pesisir Gorontalo mudah membuat debu menggumpal dan jamur tumbuh pada perangkat. Kebiasaan santri menjaga kebersihan masjid dan asrama dapat diterapkan pula di ruang editing sebagai budaya bersama.`,
+ ayat:{ref:'QS. At-Taubah [9]: 108 (bagian akhir)',ar:'وَاللَّهُ يُحِبُّ الْمُطَّهِّرِينَ',
+  id:'“…Allah menyukai orang-orang yang bersih.” (Terjemah Kemenag RI)',
+  hikmah:'Kebersihan adalah bagian dari iman (sebagaimana sabda Nabi \uFDFA riwayat Muslim bahwa kesucian adalah separuh iman). Ruang kerja yang bersih mencegah penyakit dan menumbuhkan disiplin.'},
+ act:{type:'drop',q:'Kelompokkan tindakan berikut: DILAKUKAN atau DIHINDARI di ruang editing.',cats:['Dilakukan','Dihindari'],
+  items:[{t:'Membersihkan debu ventilasi CPU secara berkala',c:0},{t:'Membuang sampah pada tempatnya',c:0},{t:'Membersihkan headphone yang dipakai bergantian',c:0},{t:'Menaruh minuman di samping keyboard',c:1},{t:'Menumpuk kardus di dekat stop kontak',c:1},{t:'Membiarkan kabel berserakan di lantai',c:1}],
+  ok:'Mantap! Itulah wujud budaya 5R di ruang editing.'}},
+
+{t:'Tanggap Darurat, P3K & Pelaporan',ico:'🚑',
+ konsep:`<p>Walau sudah berhati-hati, keadaan darurat bisa terjadi. Persiapkan tindakan yang benar:</p>
+ <ul><li><b>Api kecil akibat listrik</b>: putus aliran listrik (MCB atau cabut sumber dengan aman), gunakan APAR dengan teknik <b>PASS</b> (Pull: tarik pin; Aim: arahkan ke pangkal api; Squeeze: tekan tuas; Sweep: sapukan). <b>Jangan menyiram air</b> pada api listrik.</li>
+ <li><b>Api membesar</b>: segera evakuasi lewat jalur yang ditentukan, jangan berlari berdesakan, dan jangan kembali mengambil barang.</li>
+ <li><b>Sengatan listrik</b>: putuskan listrik lebih dulu, jangan menyentuh korban sebelum sumber listrik mati, lalu panggil bantuan.</li>
+ <li><b>Luka ringan</b>: cuci tangan, tekan luka dengan kasa bersih untuk menghentikan perdarahan, bersihkan, beri antiseptik, lalu tutup.</li>
+ <li><b>Pelaporan</b>: laporkan setiap kecelakaan dan kejadian nyaris celaka (<i>near miss</i>) kepada instruktur untuk dievaluasi dan dicegah berulang.</li></ul>`,
+ lokal:`Saat hujan deras dan listrik tidak stabil, gangguan seperti percikan api pada stop kontak lebih mudah terjadi. Kenali letak APAR, kotak P3K, dan pintu keluar sebelum mulai bekerja, bukan saat keadaan genting.`,
+ ayat:{ref:'QS. Al-Ma\u2019idah [5]: 32 (bagian akhir)',ar:'وَمَنْ أَحْيَاهَا فَكَأَنَّمَا أَحْيَا النَّاسَ جَمِيعًا',
+  id:'“…dan barangsiapa memelihara kehidupan seorang manusia, maka seakan-akan dia telah memelihara kehidupan semua manusia.” (Terjemah Kemenag RI)',
+  hikmah:'Menolong dan menyelamatkan nyawa sangat mulia. Pengetahuan P3K dan tanggap darurat membuatmu mampu bertindak cepat dan tepat ketika teman membutuhkan pertolongan.'},
+ act:{type:'quiz',q:'Ada api kecil dari stop kontak yang masih teraliri listrik. Tindakan paling tepat?',
+  opts:['Menyiram dengan air seember agar cepat padam','Memutus aliran listrik, lalu memakai APAR yang sesuai dan memanggil bantuan','Menunggu sampai api padam sendiri sambil menyimpan proyek','Menutup api dengan kertas'],ans:1,
+  ok:'Benar! Putuskan listrik, gunakan APAR yang sesuai, dan segera minta bantuan.',no:'Salah. Air berbahaya untuk api listrik dan menunggu hanya memperbesar bahaya.'}}
+];
+
+const GAMES=[
+{type:'match',title:'Jodohkan Sarana dengan Fungsinya',stim:'Instruktur mengecek kelengkapan sarana ruang editing sebelum kelas dimulai. Jodohkan setiap sarana dengan fungsinya.',
+ pairs:[['APAR','Memadamkan api awal akibat korsleting'],['Kotak P3K','Memberi pertolongan pertama pada luka ringan'],['UPS / stabilizer','Menjaga perangkat saat listrik naik-turun atau padam'],['Kursi ergonomis','Menopang punggung agar tidak cepat nyeri'],['Rambu jalur evakuasi','Menunjukkan arah keluar saat darurat']],
+ exp:'Setiap sarana K3 memiliki fungsi khusus dan harus mudah dijangkau.'},
+{type:'order',title:'Urutkan Prosedur Memulai Kerja',stim:'Pagi hari, Rizal tiba di ruang editing untuk melanjutkan video dokumenter Danau Limboto. Urutkan langkah memulai kerja yang aman.',
+ items:['Berdoa dan memeriksa kebersihan ruangan serta jalur jalan','Memeriksa kabel dan stop kontak (tidak ada yang terkelupas atau panas)','Mengatur kursi, monitor, dan pencahayaan agar ergonomis','Menyalakan perangkat sesuai urutan','Mulai mengedit dan beristirahat tiap 20 menit'],
+ exp:'Urutan: ruangan → kelistrikan → ergonomi → perangkat → bekerja dengan jeda.'},
+{type:'drop',title:'Kelompokkan Jenis Bahaya',stim:'Saat observasi ruang editing, ditemukan enam kondisi berikut. Kelompokkan berdasarkan jenis bahayanya.',
+ cats:['Bahaya Listrik','Bahaya Ergonomi','Bahaya Lingkungan'],
+ items:[{t:'Kabel catu daya terkelupas',c:0},{t:'Colokan bertumpuk di satu terminal',c:0},{t:'Duduk membungkuk berjam-jam',c:1},{t:'Monitor terlalu rendah',c:1},{t:'Lantai licin karena tumpahan air',c:2},{t:'Debu menumpuk dan ruangan pengap',c:2}],
+ exp:'Mengenali jenis bahaya memudahkan pemilihan cara pengendaliannya.'},
+{type:'mcq',title:'Hujan Deras di Gorontalo',stim:'Siang itu hujan deras mengguyur Gorontalo. Lampu ruang editing berkedip dan komputer Fauzan sempat restart. Proyek videonya belum selesai disimpan, dan air mulai menetes dari plafon dekat stop kontak.',
+ q:'Tindakan paling aman yang sebaiknya dilakukan adalah…',opts:['Terus mengedit karena tenggat sudah dekat','Menyimpan proyek bila aman, mematikan perangkat, lalu menjauh dari area basah dan melapor ke instruktur','Mengelap air di stop kontak dengan tangan basah','Menyiram plafon agar tidak menetes'],ans:1,
+ exp:'Air dan listrik tidak boleh bertemu. Selamatkan proyek hanya jika aman, matikan perangkat, jauhi area basah, lalu lapor.'},
+{type:'multi',title:'Api Kecil pada Stop Kontak (PG Kompleks)',stim:'Sebuah stop kontak mengeluarkan bau gosong dan api kecil. Pilih SEMUA tindakan yang benar.',
+ q:'Pilih semua jawaban yang benar:',opts:['Memutus aliran listrik (MCB atau sumber utama)','Menyiram api dengan air','Menggunakan APAR dengan teknik PASS','Memanggil instruktur atau meminta bantuan','Tetap menyelesaikan render lebih dulu'],ans:[0,2,3],
+ exp:'Putus listrik, pakai APAR, dan minta bantuan. Air berbahaya, dan melanjutkan pekerjaan membahayakan jiwa.'},
+{type:'drop',title:'Boleh atau Tidak Boleh?',stim:'Instruktur menempel daftar aturan ruang editing. Kelompokkan tindakan berikut sesuai aturan K3.',
+ cats:['Boleh Dilakukan','Tidak Boleh'],
+ items:[{t:'Merapikan kabel dengan cable ties',c:0},{t:'Menyimpan APAR di tempat mudah dijangkau',c:0},{t:'Melaporkan kabel yang mulai panas',c:0},{t:'Makan binte biluhuta di meja komputer',c:1},{t:'Menutup jalur evakuasi dengan kardus',c:1},{t:'Mencabut colokan dengan menarik kabelnya',c:1}],
+ exp:'Aturan sederhana ini mencegah korsleting, kebakaran, dan hambatan saat evakuasi.'},
+{type:'mcq',title:'Mata Perih Setelah Mengedit',stim:'Dewi mengedit video profil sekolah selama 3 jam tanpa jeda. Matanya perih, kabur, dan kepalanya pening. Ia ingin mencegahnya agar tidak terulang.',
+ q:'Cara yang paling tepat adalah…',opts:['Menambah kecerahan layar sampai maksimal','Menerapkan aturan 20-20-20 dan memperbaiki pencahayaan','Mengedit lebih lama agar mata terbiasa','Menutup mata sebentar sambil tetap menatap layar'],ans:1,
+ exp:'Aturan 20-20-20 (tiap 20 menit, tatap objek ±6 m selama 20 detik) dan pencahayaan yang baik mengurangi lelah mata.'},
+{type:'order',title:'Urutkan Teknik Memakai APAR (PASS)',stim:'Api kecil muncul dari perangkat listrik dan aliran listrik sudah diputus. Urutkan teknik penggunaan APAR yang benar.',
+ items:['Tarik pin pengunci (Pull)','Arahkan nozzle ke pangkal api (Aim)','Tekan tuas APAR (Squeeze)','Sapukan semburan ke kiri dan kanan (Sweep)'],
+ exp:'Teknik PASS: Pull, Aim, Squeeze, Sweep.'},
+{type:'match',title:'Jodohkan Istilah K3',stim:'Dalam kuis pembuka, instruktur meminta peserta menjodohkan istilah-istilah penting K3 dengan pengertiannya.',
+ pairs:[['K3','Upaya melindungi pekerja dari kecelakaan dan penyakit akibat kerja'],['Hazard','Sumber yang berpotensi menimbulkan cedera atau kerusakan'],['Risiko','Kemungkinan bahaya menjadi kerugian dikalikan dampaknya'],['Near miss','Kejadian nyaris celaka tanpa korban atau kerusakan']],
+ exp:'Memahami istilah membantu kamu berkomunikasi dan melaporkan kondisi berbahaya dengan tepat.'},
+{type:'multi',title:'Ciri Ruang Editing Sehat & Bersih (PG Kompleks)',stim:'Tim BLKK menilai kebersihan dan kesehatan ruang editing berdasarkan standar 5R. Pilih SEMUA ciri ruang kerja yang memenuhi standar.',
+ q:'Pilih semua jawaban yang benar:',opts:['Ventilasi dan sirkulasi udara terjaga','Sampah dibuang pada tempatnya','Debu pada perangkat dibersihkan berkala','Kabel dibiarkan menumpuk di jalur jalan','Sisa makanan dibiarkan di meja komputer'],ans:[0,1,2],
+ exp:'Ruang sehat: udara lancar, bersih, perangkat terawat, jalur bebas, dan tidak ada makanan di meja.'}
+];
+
+const LATIH=[
+{lv:1,w:7,stim:`Di ruang editing BLKK Al Ishlah Gorontalo terdapat 10 unit komputer, 10 kursi, dan 1 unit APAR. Setiap pagi, instruktur mengingatkan peserta bahwa mengedit video bukan hanya soal hasil yang bagus, tetapi juga soal keselamatan. Dalam satu tahun terakhir tercatat 4 kejadian nyaris celaka: dua kali karena kabel melintang di lantai, satu kali karena stop kontak menjadi panas akibat colokan bertumpuk, dan satu kali karena peserta pusing setelah mengedit tanpa jeda selama 5 jam. Untungnya, tidak ada peserta yang terluka. Dari kejadian tersebut, instruktur menegaskan bahwa bahaya harus dikendalikan sejak dini. Menurutnya, upaya melindungi pekerja dari kecelakaan kerja dan penyakit akibat kerja, agar pekerjaan berjalan aman, sehat, dan produktif, itulah yang disebut K3, dan semua peserta wajib memahaminya sebelum bekerja.`,
+ q:'Berdasarkan teks, pengertian K3 yang paling tepat adalah…',opts:['Upaya melindungi pekerja dari kecelakaan dan penyakit akibat kerja agar pekerjaan aman, sehat, dan produktif','Aturan yang hanya berlaku bagi pekerja pabrik besar','Kegiatan membersihkan ruangan setiap akhir bulan','Cara mempercepat proses render video'],ans:0,
+ exp:'K3 adalah upaya melindungi pekerja dari kecelakaan dan penyakit akibat kerja sehingga kerja aman, sehat, dan produktif.'},
+{lv:1,w:7,stim:`Tim ruang editing BLKK Al Ishlah menyusun daftar sarana K3 yang harus tersedia. Dari 6 item dalam daftar, baru 4 yang ada, yaitu APAR, kotak P3K, rambu jalur evakuasi, dan stabilizer listrik. Dua item yang belum tersedia adalah kursi ergonomis dan penutup kabel (cable cover). Dengan demikian, tingkat kelengkapan sarana baru mencapai sekitar 67 persen. Instruktur menjelaskan bahwa sarana K3 harus dipersiapkan sebelum pekerjaan dimulai, bukan setelah kecelakaan terjadi. Ia juga mengingatkan bahwa setiap sarana punya fungsi khusus. Misalnya, saat hujan deras di Gorontalo, lonjakan listrik bisa memicu korsleting pada stop kontak sehingga muncul api kecil. Pada kondisi seperti itu, peserta perlu tahu alat mana yang tepat digunakan untuk memadamkan api awal dengan cepat sebelum api membesar dan merusak peralatan editing.`,
+ q:'Alat K3 yang paling tepat digunakan untuk memadamkan api awal akibat korsleting adalah…',opts:['Kotak P3K','APAR','Rambu jalur evakuasi','Penutup kabel (cable cover)'],ans:1,
+ exp:'APAR berfungsi memadamkan api awal. P3K untuk luka, rambu untuk arah evakuasi, cable cover untuk menata kabel.'},
+{lv:1,w:7,stim:`Rizal adalah peserta pelatihan Video Editor yang sedang mengerjakan proyek dokumenter tentang Danau Limboto. Ia mengedit selama 4 jam penuh dengan posisi membungkuk karena layar monitornya terlalu rendah. Layar juga berada dekat jendela sehingga sering silau terkena sinar matahari siang Gorontalo. Setelah 4 jam, leher dan punggung Rizal terasa nyeri, matanya perih dan kering, dan ia mulai sulit berkonsentrasi. Instruktur menjelaskan bahwa keluhan seperti ini bukan kecelakaan mendadak, melainkan gangguan kesehatan yang muncul pelan-pelan karena kebiasaan kerja yang tidak sesuai. Jika terus berulang selama berbulan-bulan, keluhan tersebut dapat berkembang menjadi penyakit akibat kerja. Pencegahannya adalah menata posisi kerja, mengatur pencahayaan, dan beristirahat secara teratur. Karena itu, kamu perlu mengenali jenis bahayanya terlebih dahulu.`,
+ q:'Jenis bahaya yang paling tepat menggambarkan keluhan Rizal adalah…',opts:['Bahaya listrik','Bahaya kebakaran','Bahaya ergonomi','Bahaya biologis'],ans:2,
+ exp:'Posisi membungkuk, monitor terlalu rendah, dan silau adalah masalah ergonomi/kenyamanan kerja.'},
+{lv:1,w:7,stim:`Dalam pelatihan K3, peserta mempelajari bahwa perlindungan pekerja memiliki dasar hukum yang jelas di Indonesia. Undang-Undang Nomor 1 Tahun 1970 mengatur tentang keselamatan kerja di semua tempat kerja. Undang-Undang Nomor 13 Tahun 2003 tentang Ketenagakerjaan, pada Pasal 86, menyatakan bahwa setiap pekerja berhak memperoleh perlindungan atas keselamatan dan kesehatan kerja. Selanjutnya, Peraturan Pemerintah Nomor 50 Tahun 2012 mengatur penerapan Sistem Manajemen K3 (SMK3) di perusahaan. Instruktur menekankan bahwa aturan ini berlaku juga untuk ruang editing, meskipun ukurannya kecil, karena listrik, ergonomi, dan kebakaran tetap menjadi risiko nyata. Ia menambahkan bahwa pelaksanaan K3 bukan semata-mata karena takut pada sanksi, melainkan bentuk kepedulian terhadap keselamatan sesama, sebagaimana diajarkan nilai-nilai Islam tentang menjaga jiwa.`,
+ q:'Peraturan yang secara khusus mengatur keselamatan kerja di semua tempat kerja adalah…',opts:['UU No. 13 Tahun 2003 tentang Ketenagakerjaan','PP No. 50 Tahun 2012 tentang SMK3','Aturan internal BLKK saja','UU No. 1 Tahun 1970 tentang Keselamatan Kerja'],ans:3,
+ exp:'UU No. 1 Tahun 1970 adalah undang-undang keselamatan kerja yang berlaku di semua tempat kerja.'},
+{lv:2,w:10,stim:`Pada sore hari menjelang tenggat proyek video, ruang editing menjadi ramai. Rizal dan tiga temannya ingin menyalakan empat set komputer editing sekaligus. Setiap set (CPU dan monitor) memakai daya sekitar 300 watt. Mereka hanya menemukan satu terminal kabel dengan batas daya aman 1.000 watt, sementara terminal lain berada di sisi ruangan yang berbeda. Salah satu teman berkata, “Tinggal dicolok saja semua, kelebihannya hanya sedikit.” Instruktur lalu mengingatkan bahwa kabel dan terminal yang menerima beban melebihi kapasitas akan memanas dan bisa memicu kebakaran, apalagi udara pesisir Gorontalo yang lembap dan panas. Karena itu, perhitungan beban listrik harus dilakukan sebelum perangkat dinyalakan, bukan setelah muncul bau gosong atau kabel terasa panas.`,
+ q:'Berdasarkan perhitungan beban, tindakan yang paling tepat adalah…',opts:['Mencolokkan maksimal 3 set (900 watt) dan memindahkan 1 set ke terminal lain','Mencolokkan keempat set karena kelebihannya hanya 200 watt','Memasang colokan bertumpuk agar semua set muat','Menutup terminal dengan kain agar panasnya tidak terlihat'],ans:0,
+ exp:'4 × 300 W = 1.200 W melebihi batas 1.000 W. Maksimal 3 set (900 W); sisanya ke terminal lain.'},
+{lv:2,w:10,stim:`Dewi mendapat tugas mengedit video profil sekolah selama 3 jam tanpa berhenti. Di tengah pekerjaan, matanya mulai perih dan kabur. Instruktur memperkenalkan aturan 20-20-20 untuk menjaga kesehatan mata para editor, yaitu setiap 20 menit bekerja menatap layar, alihkan pandangan ke objek yang berjarak sekitar 20 kaki atau kurang lebih 6 meter selama 20 detik. Di ruang editing yang menghadap ke halaman, Dewi bisa memandang pohon kelapa di kejauhan sebagai objek pengalih pandangan. Instruktur juga menyarankan peregangan leher dan bahu serta minum air putih agar tubuh tidak cepat lelah, terutama saat cuaca panas. Dewi kemudian menghitung berapa kali ia seharusnya beristirahat jika mematuhi aturan tersebut sepanjang 3 jam pekerjaannya, agar ia dapat menjadwalkannya di dalam timeline kerjanya.`,
+ q:'Selama 3 jam (180 menit) bekerja, berapa kali Dewi minimal beristirahat mata sesuai aturan 20-20-20?',opts:['3 kali','9 kali','6 kali','18 kali'],ans:1,
+ exp:'180 menit ÷ 20 menit = 9 kali istirahat mata.'},
+{lv:2,w:10,stim:`Saat istirahat, Fauzan membawa segelas es kelapa muda dan semangkuk binte biluhuta, kuliner jagung khas Gorontalo, ke ruang editing. Karena terburu-buru melanjutkan proyek, ia meletakkannya di samping keyboard. Tanpa sengaja, sikunya menyenggol gelas sehingga air kelapa tumpah mengenai keyboard dan merembes ke arah terminal kabel di bawah meja. Perangkat masih menyala, layar berkedip, dan beberapa teman mulai panik. Instruktur berkata bahwa air dan listrik adalah kombinasi yang sangat berbahaya, sedangkan kebersihan ruang kerja juga harus dijaga karena sisa makanan dapat mengundang semut dan tikus yang menggigit kabel. Karena itu, makanan dan minuman seharusnya tidak diletakkan di dekat perangkat. Namun, kejadian sudah terjadi dan peserta harus segera mengambil tindakan yang benar untuk mencegah sengatan listrik dan kerusakan perangkat.`,
+ q:'Langkah pertama yang paling tepat setelah tumpahan terjadi adalah…',opts:['Mengelap keyboard selagi perangkat masih menyala','Memutus aliran listrik (mematikan dan melepas dari sumber listrik secara aman), lalu membersihkan tumpahan','Menyiram dengan air bersih agar rasa manisnya hilang','Melanjutkan mengedit sampai proyek selesai'],ans:1,
+ exp:'Prioritas utama adalah memutus listrik agar tidak tersengat atau korsleting, baru membersihkan.'},
+{lv:3,w:14,stim:`Dalam dua bulan terakhir, 3 dari 15 peserta tersandung kabel ekstensi yang melintang di jalur jalan antar meja editing. Persentase kejadian itu mencapai 20 persen dari seluruh peserta. Pengelola menyusun empat usulan penanganan. Usulan pertama, mengumumkan agar peserta lebih berhati-hati. Usulan kedua, menempel tulisan “Awas Kabel!” di dinding. Usulan ketiga, menata ulang posisi meja dan memasang penutup kabel (cable cover) sehingga kabel tidak lagi melintasi jalur jalan. Usulan keempat, meminta peserta memakai sepatu yang tebal. Instruktur menjelaskan prinsip hierarki pengendalian bahaya: cara terbaik adalah menghilangkan atau mengisolasi sumber bahaya dari akarnya, sedangkan imbauan, tanda peringatan, dan alat pelindung diri berada di tingkat lebih rendah karena sangat bergantung pada kewaspadaan manusia yang bisa lengah.`,
+ q:'Usulan yang paling efektif mengendalikan bahaya dari sumbernya adalah…',opts:['Mengumumkan agar peserta lebih berhati-hati','Menempel tulisan “Awas Kabel!” di dinding','Menata ulang meja dan memasang cable cover','Meminta peserta memakai sepatu tebal'],ans:2,
+ exp:'Menata ulang dan memasang cable cover menghilangkan/mengisolasi sumber bahaya (rekayasa teknik), lebih kuat daripada imbauan, rambu, atau APD.'},
+{lv:3,w:14,stim:`Instruktur mengajak peserta menilai risiko menggunakan matriks sederhana. Nilai risiko dihitung dengan rumus: kemungkinan terjadi (skala 1–5) dikalikan tingkat dampak (skala 1–5). Hasil penilaian di ruang editing adalah sebagai berikut. Kabel catu daya terkelupas: kemungkinan 4, dampak 5. Mata lelah karena terlalu lama menatap layar: kemungkinan 5, dampak 2. Debu menumpuk pada ventilasi komputer: kemungkinan 3, dampak 2. Karena dana dan waktu terbatas, pengelola hanya dapat menangani satu bahaya pada minggu ini. Ia ingin menentukan prioritas secara objektif, bukan berdasarkan perasaan semata. Di sisi lain, ia sadar bahwa semua bahaya tetap perlu ditangani secara bertahap pada minggu-minggu berikutnya sesuai urutan nilai risikonya, supaya ruang kerja menjadi semakin aman bagi seluruh peserta.`,
+ q:'Bahaya yang harus diprioritaskan minggu ini beserta alasannya adalah…',opts:['Mata lelah, karena kemungkinan terjadinya paling tinggi (5)','Debu ventilasi, karena paling mudah dibersihkan','Kabel terkelupas, karena nilai risikonya tertinggi, yaitu 20','Semua sama karena risiko tidak dapat dihitung'],ans:2,
+ exp:'Kabel: 4×5=20; mata lelah: 5×2=10; debu: 3×2=6. Nilai tertinggi ditangani lebih dulu.'},
+{lv:3,w:14,stim:`Pada siang hari yang panas, hujan deras tiba-tiba mengguyur Gorontalo dan listrik berkedip. Tak lama kemudian, asap tipis dan bau gosong keluar dari power supply sebuah komputer di ruang editing, disusul api kecil sebesar telapak tangan. Rizal berada paling dekat. Di dinding terdapat satu APAR berisi karbon dioksida dan satu ember air. Ia juga sedang mengerjakan proyek video berdurasi 20 menit yang belum disimpan di perangkat lain. Beberapa teman berteriak agar ia menyiram api dengan air supaya cepat padam, sementara yang lain menyuruhnya menyelamatkan data dulu. Instruktur berkata bahwa dalam situasi seperti ini keselamatan jiwa harus didahulukan di atas data dan barang, sesuai ajaran Islam tentang menjaga jiwa, dan api listrik tidak boleh dipadamkan dengan air selama arus listrik masih mengalir.`,
+ q:'Keputusan yang paling tepat dan aman bagi Rizal adalah…',opts:['Menyiram air karena api cepat padam','Memutus listrik (MCB/sumber), memakai APAR dengan teknik PASS, memanggil bantuan, dan evakuasi bila api membesar','Menyelamatkan data selama 10 menit dahulu','Hanya membuka jendela lebar-lebar'],ans:1,
+ exp:'Air berbahaya untuk api listrik. Putus listrik, gunakan APAR yang sesuai, minta bantuan, dan evakuasi jika api membesar; keselamatan jiwa di atas data.'}
+];
+</script>
+
+<!-- ================= LOGIC ================= -->
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const el=(tag,cls,html)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e;};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const LET='ABCDE';
+const S={nama:'',kelas:'',unl:{bermain:false,berlatih:false},bi:0,bdone:[],belajarDone:false,
+  gi:0,gpts:[],bermainDone:false,gTotal:0,gDetail:[],
+  li:0,lans:[],latihDone:false,res:null,guide:0};
+
+function show(id){$$('.screen').forEach(s=>s.classList.remove('active'));$('#s-'+id).classList.add('active');window.scrollTo(0,0);}
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2400);}
+function openModal(html){$('#modalCard').innerHTML=html+`<div style="text-align:center;margin-top:16px"><button class="btn btn-primary" id="mBack">← Kembali ke Cover</button></div>`;$('#modal').classList.add('open');$('#mBack').onclick=closeModal;}
+function closeModal(){$('#modal').classList.remove('open');}
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
+
+/* ---------- COVER ---------- */
+$$('#s-cover [data-tip]').forEach(g=>g.addEventListener('click',()=>{$('#coverTip').textContent=g.dataset.tip;}));
+$('#btnDev').onclick=()=>{
+  openModal(`<div class="avatar"><span>MF</span><img src="https://iili.io/CSAHRQ1.png" alt="Foto Muhammad Fahri Akbar" onerror="this.remove()"></div>
+  <h2 style="text-align:center">Informasi Pengembang</h2>
+  <div class="info-row"><b>Nama Guru</b><span>Muhammad Fahri Akbar, S.Sos</span></div>
+  <div class="info-row"><b>Satuan Pendidikan</b><span>BLKK Al Ishlah Gorontalo</span></div>
+  <div class="info-row"><b>Mata Pelajaran</b><span>Video Editor</span></div>
+  <div class="info-row"><b>Topik Media</b><span>Melaksanakan prosedur Keselamatan dan Kesehatan Kerja (K3) ditempat kerja</span></div>`);
+};
+$('#btnTP').onclick=()=>{
+  openModal(`<h2>🎯 Tujuan Pembelajaran</h2>
+  <ul class="tp-list">
+   <li class="head">1. Mempersiapkan prosedur dasar K3 di tempat kerja</li>
+   <li><b>1.1</b> Keselamatan dan Kesehatan Kerja atau K3 dijelaskan sesuai dengan pedoman.</li>
+   <li><b>1.2</b> Alat dan sarana Keselamatan dan Kesehatan Kerja atau K3 dipersiapkan.</li>
+   <li class="head">2. Menerapkan K3 di tempat kerja</li>
+   <li><b>2.1</b> Prosedur Keselamatan dan Kesehatan Kerja atau K3 dilaksanakan berdasarkan pedoman di tempat kerja ruang editing.</li>
+   <li><b>2.2</b> Kebersihan dan kesehatan tempat kerja dilakukan sesuai standar di tempat kerja ruang editing.</li>
+  </ul>`);
+};
+$('#btnStart').onclick=()=>show('form');
+$('#formBack').onclick=()=>show('cover');
+
+/* ---------- FORM ---------- */
+$('#frmId').addEventListener('submit',e=>{
+  e.preventDefault();
+  const n=$('#inNama').value.trim(),k=$('#inKelas').value.trim();
+  const okN=n.length>=3,okK=k.length>=1;
+  $('#fNama').classList.toggle('err',!okN);$('#fKelas').classList.toggle('err',!okK);
+  if(!okN){$('#inNama').focus();return;} if(!okK){$('#inKelas').focus();return;}
+  S.nama=n;S.kelas=k;S.guide=0;renderGuide();show('guide');
+});
+['inNama','inKelas'].forEach(id=>$('#'+id).addEventListener('input',()=>$('#'+id).closest('.field').classList.remove('err')));
+
+/* ---------- GUIDE ---------- */
+function guideSlides(){return [
+ {i:'👋',t:`Assalamu\u2019alaikum, ${esc(S.nama)}!`,b:`Selamat datang di media pembelajaran interaktif <b>K3 di Ruang Editing</b>. Di sini kamu akan belajar menjaga keselamatan dan kesehatan saat bekerja sebagai Video Editor.`},
+ {i:'🗺️',t:'Tiga Tahap Belajar',b:`<b>1. BELAJAR 📖</b> – 8 slide materi + aktivitas mini.<br><b>2. BERMAIN 🎮</b> – 10 tantangan seru.<br><b>3. BERLATIH 📝</b> – 10 soal penilaian (Level 1–3).<br><br>Tahap dibuka <b>berurutan</b>: selesaikan satu untuk membuka berikutnya 🔓.`},
+ {i:'👆',t:'Cara Berinteraksi',b:`• <b>Ketuk</b> pilihan jawaban untuk memilih.<br>• Pada kartu <b>seret-lepas</b>, kamu boleh menyeret kartu, atau <b>ketuk kartu lalu ketuk kelompok</b> tujuannya (ramah layar HP).<br>• Ketuk kartu yang sudah ditempatkan untuk mengembalikannya.<br>• Dapatkan umpan balik langsung setiap kali menjawab.`},
+ {i:'📄',t:'Laporan Hasil Belajar',b:`Setelah semua tahap selesai, kamu akan mendapat <b>laporan hasil belajar</b> berisi skor Bermain dan nilai Berlatih per level yang dapat dicetak atau diunduh sebagai PDF.<br><br>Bismillah, mari mulai! 🚀`}];}
+function renderGuide(){
+  const g=guideSlides(),i=S.guide,s=g[i],c=$('#guideCard');
+  c.innerHTML=`<div class="guide-ico">${s.i}</div><h2 style="text-align:center;color:var(--teal)">${s.t}</h2><p>${s.b}</p>
+  <div class="dots">${g.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div>
+  <div class="nav"><button class="btn btn-ghost" id="gPrev">← ${i===0?'Identitas':'Kembali'}</button><button class="btn btn-primary" id="gNext">${i===g.length-1?'Ke Menu Utama ▶':'Lanjut →'}</button></div>`;
+  $('#gPrev').onclick=()=>{if(i===0)show('form');else{S.guide--;renderGuide();}};
+  $('#gNext').onclick=()=>{if(i===g.length-1){renderMenu();show('menu');}else{S.guide++;renderGuide();}};
+}
+
+/* ---------- MENU ---------- */
+function renderMenu(){
+  $('#menuHello').textContent=`Halo, ${S.nama}! 👋`;
+  const grid=$('#menuGrid');grid.innerHTML='';
+  const cards=[
+   {k:'belajar',ic:'📖',t:'BELAJAR',d:'8 slide materi mendalam + aktivitas mini',open:true,done:S.belajarDone},
+   {k:'bermain',ic:'🎮',t:'BERMAIN',d:'10 tantangan gamifikasi seru',open:S.unl.bermain,done:S.bermainDone},
+   {k:'berlatih',ic:'📝',t:'BERLATIH',d:'10 soal asesmen berjenjang (100 poin)',open:S.unl.berlatih,done:S.latihDone}];
+  cards.forEach((c,i)=>{
+    const d=el('div','mcard '+(c.open?'open':'locked')+(c.done?' done':''));
+    d.innerHTML=`<div class="lock">${c.open?'🔓':'🔒'}</div><div class="ic">${c.ic}</div><h3 style="color:var(--deep)">${i+1}. ${c.t}</h3><p class="muted small">${c.d}</p><span class="stat">${c.done?'✅ Selesai':(c.open?'Terbuka – ayo mulai':'Terkunci')}</span>`;
+    d.onclick=()=>{
+      if(!c.open){toast(i===1?'🔒 Selesaikan menu BELAJAR terlebih dahulu.':'🔒 Selesaikan menu BERMAIN terlebih dahulu.');return;}
+      if(c.k==='belajar')startBelajar();else if(c.k==='bermain')startBermain();else startBerlatih();
+    };
+    grid.append(d);
+  });
+  const ex=$('#menuExtra');ex.innerHTML='';
+  if(S.latihDone){const b=el('button','btn btn-gold','📄 Lihat Laporan Hasil Belajar');b.onclick=()=>{renderReport();show('report');};ex.append(b);}
+}
+$$('[data-menu]').forEach(b=>b.onclick=()=>{renderMenu();show('menu');});
+
+/* ---------- WIDGETS ---------- */
+function makeDrop(host,cfg,onChange){
+  const st={sel:null,place:{},mark:{},locked:false};
+  const order=shuffle(cfg.items.map((_,i)=>i));
+  const pool=el('div','pool'),bk=el('div','buckets');host.innerHTML='';host.append(pool,bk);
+  function chip(i){
+    const c=el('div','chip'+(st.sel===i?' sel':'')+(st.mark[i]?' '+st.mark[i]:''));c.textContent=cfg.items[i].t;
+    c.draggable=!st.locked;
+    c.addEventListener('dragstart',e=>{if(st.locked)return;e.dataTransfer.setData('text/plain',String(i));});
+    c.addEventListener('click',ev=>{ev.stopPropagation();if(st.locked)return;
+      if(st.place[i]!==undefined){delete st.place[i];st.sel=null;}else{st.sel=(st.sel===i)?null:i;}
+      st.mark={};r();onChange&&onChange();});
+    return c;}
+  function put(i,ci){st.place[i]=ci;st.sel=null;st.mark={};r();onChange&&onChange();}
+  function r(){
+    pool.innerHTML='';bk.innerHTML='';
+    order.forEach(i=>{if(st.place[i]===undefined)pool.append(chip(i));});
+    if(!pool.children.length)pool.innerHTML='<span class="muted small">Semua kartu sudah ditempatkan ✔</span>';
+    cfg.cats.forEach((cn,ci)=>{
+      const b=el('div','bucket');b.append(el('div','bucket-title',esc(cn)));
+      const z=el('div','bucket-zone');order.forEach(i=>{if(st.place[i]===ci)z.append(chip(i));});b.append(z);
+      b.addEventListener('click',()=>{if(st.locked||st.sel===null)return;put(st.sel,ci);});
+      b.addEventListener('dragover',e=>{e.preventDefault();b.classList.add('over');});
+      b.addEventListener('dragleave',()=>b.classList.remove('over'));
+      b.addEventListener('drop',e=>{e.preventDefault();b.classList.remove('over');if(st.locked)return;const i=parseInt(e.dataTransfer.getData('text/plain'),10);if(!isNaN(i))put(i,ci);});
+      bk.append(b);});
+  }
+  r();
+  return{
+    ready:()=>cfg.items.every((_,i)=>st.place[i]!==undefined),
+    score:()=>cfg.items.filter((it,i)=>st.place[i]===it.c).length/cfg.items.length,
+    wrongCount:()=>cfg.items.filter((it,i)=>st.place[i]!==it.c).length,
+    markResult:()=>{cfg.items.forEach((it,i)=>{st.mark[i]=st.place[i]===it.c?'ok':'bad';});r();},
+    lock:()=>{st.locked=true;host.classList.add('locked-w');r();},
+    answer:()=>cfg.cats.map((cn,ci)=>`<b>${esc(cn)}</b>: `+cfg.items.filter(it=>it.c===ci).map(it=>esc(it.t)).join('; ')).join('<br>')};
+}
+function wMatch(host,g){
+  const rights=shuffle(g.pairs.map(p=>p[1]));const sels=[];
+  host.innerHTML='<p class="muted small">Pilih pasangan yang tepat untuk setiap sarana/istilah.</p>';
+  g.pairs.forEach((p,i)=>{
+    const row=el('div','mrow');row.append(el('b','',esc(p[0])));
+    const s=el('select');s.innerHTML='<option value="">— pilih —</option>'+rights.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
+    sels.push(s);row.append(s);host.append(row);});
+  return{ready:()=>sels.every(s=>s.value!==''),
+    score:()=>sels.filter((s,i)=>s.value===g.pairs[i][1]).length/g.pairs.length,
+    lock:()=>{sels.forEach(s=>s.disabled=true);},
+    answer:()=>g.pairs.map(p=>`<b>${esc(p[0])}</b> → ${esc(p[1])}`).join('<br>')};
+}
+function wOrder(host,g){
+  const st={seq:[],locked:false};const idx=shuffle(g.items.map((_,i)=>i));
+  const info=el('p','muted small','Ketuk kartu sesuai urutan yang benar. Ketuk kartu di daftar urutan untuk membatalkannya.');
+  const pool=el('div','pool'),seq=el('ol','seq');host.innerHTML='';host.append(info,pool,seq);
+  function r(){pool.innerHTML='';seq.innerHTML='';
+    idx.forEach(i=>{if(!st.seq.includes(i)){const c=el('div','chip');c.textContent=g.items[i];c.onclick=()=>{if(st.locked)return;st.seq.push(i);r();};pool.append(c);}});
+    if(!pool.children.length)pool.innerHTML='<span class="muted small">Semua langkah sudah diurutkan ✔</span>';
+    st.seq.forEach((i,p)=>{const li=el('li','');li.textContent=g.items[i];li.onclick=()=>{if(st.locked)return;st.seq.splice(p,1);r();};seq.append(li);});}
+  r();
+  return{ready:()=>st.seq.length===g.items.length,
+    score:()=>st.seq.filter((v,p)=>v===p).length/g.items.length,
+    lock:()=>{st.locked=true;host.classList.add('locked-w');},
+    answer:()=>g.items.map((t,i)=>`${i+1}. ${esc(t)}`).join('<br>')};
+}
+function wChoice(host,g,multi){
+  const sel=new Set();host.innerHTML='';
+  if(multi)host.append(el('p','muted small','Boleh memilih lebih dari satu jawaban.'));
+  const btns=g.opts.map((t,i)=>{const b=el('button','opt');b.type='button';b.innerHTML=`<b>${LET[i]}.</b> ${esc(t)}`;
+    b.onclick=()=>{if(b.disabled)return;if(multi){sel.has(i)?sel.delete(i):sel.add(i);}else{sel.clear();sel.add(i);}
+      btns.forEach((x,k)=>x.classList.toggle('sel',sel.has(k)));};host.append(b);return b;});
+  const correct=multi?g.ans:[g.ans];
+  return{ready:()=>sel.size>0,
+    score:()=>{const cs=correct.filter(c=>sel.has(c)).length,ws=[...sel].filter(s=>!correct.includes(s)).length;return Math.max(0,(cs-ws)/correct.length);},
+    lock:()=>{btns.forEach((b,i)=>{b.disabled=true;if(correct.includes(i))b.classList.add('good');else if(sel.has(i))b.classList.add('bad');});},
+    answer:()=>correct.map(c=>`${LET[c]}. ${esc(g.opts[c])}`).join('<br>')};
+}
+
+/* ---------- BELAJAR ---------- */
+function startBelajar(){S.bi=0;if(!S.bdone.length)S.bdone=BELAJAR.map(()=>false);renderBelajar();show('belajar');}
+function renderBelajar(){
+  const i=S.bi,d=BELAJAR[i];
+  $('#bProg').style.width=((i+1)/BELAJAR.length*100)+'%';$('#bCount').textContent=`Slide ${i+1}/${BELAJAR.length}`;
+  const c=$('#bCard');
+  c.innerHTML=`<div style="display:flex;gap:12px;align-items:center"><div style="font-size:2.4rem">${d.ico}</div><div><span class="badge badge-gold">Slide Materi ${i+1}</span><h2 style="margin:6px 0 0;color:var(--deep)">${d.t}</h2></div></div>
+   <div class="sec"><h3>📘 Konsep Inti</h3>${d.konsep}</div>
+   <div class="sec local"><h3>🌴 Konteks Lokal Gorontalo</h3><p style="margin:0">${d.lokal}</p></div>
+   <div class="ayat"><div class="ref">📖 ${d.ayat.ref}</div><div class="ar" lang="ar">${d.ayat.ar}</div><div class="tr">${d.ayat.id}</div><div class="hk">💡 <b>Hikmah:</b> ${d.ayat.hikmah}</div></div>
+   <div class="act"><h3>🎯 Aktivitas Mikro</h3><div id="actHost"></div></div>
+   <div class="nav"><button class="btn btn-ghost" id="bPrev" ${i===0?'disabled':''}>← Sebelumnya</button><button class="btn btn-primary" id="bNext" disabled>${i===BELAJAR.length-1?'Selesai Belajar ✔':'Berikutnya →'}</button></div>`;
+  $('#bPrev').onclick=()=>{S.bi--;renderBelajar();window.scrollTo(0,0);};
+  $('#bNext').onclick=()=>{
+    if(i===BELAJAR.length-1){
+      S.belajarDone=true;S.unl.bermain=true;toast('🎉 Menu BERMAIN terbuka!');renderMenu();show('menu');
+    }else{S.bi++;renderBelajar();window.scrollTo(0,0);}};
+  const enable=()=>{S.bdone[i]=true;$('#bNext').disabled=false;};
+  buildAct($('#actHost'),d.act,enable,S.bdone[i]);
+  if(S.bdone[i])$('#bNext').disabled=false;
+}
+function buildAct(host,a,onDone,already){
+  host.innerHTML=`<p><b>${a.q}</b></p><div id="aw"></div><div class="fb" id="afb"></div>`;
+  const aw=$('#aw',host),fb=$('#afb',host);
+  const say=(cls,t)=>{fb.className='fb show '+cls;fb.innerHTML=t;};
+  if(a.type==='quiz'){
+    a.opts.forEach((t,k)=>{const b=el('button','opt');b.type='button';b.innerHTML=`<b>${LET[k]}.</b> ${esc(t)}`;
+      b.onclick=()=>{if(b.disabled)return;
+        if(k===a.ans){b.classList.add('good');$$('.opt',aw).forEach(x=>x.disabled=true);say('ok','✅ '+a.ok);onDone();}
+        else{b.classList.add('bad');b.disabled=true;say('no','❌ '+a.no+' Coba lagi!');}};aw.append(b);});
+  }else{
+    const w=makeDrop(aw,a,()=>{fb.className='fb';});
+    const btn=el('button','btn btn-gold','✔ Periksa Jawaban');btn.style.marginTop='12px';host.append(btn);
+    btn.onclick=()=>{
+      if(!w.ready()){say('info','ℹ️ Tempatkan semua kartu ke kelompok terlebih dahulu.');return;}
+      w.markResult();
+      if(w.wrongCount()===0){w.lock();say('ok','✅ '+a.ok);btn.disabled=true;onDone();}
+      else say('no',`❌ ${w.wrongCount()} kartu belum tepat (warna merah). Ketuk kartu merah untuk memindahkannya, lalu periksa lagi.`);};
+  }
+}
+
+/* ---------- BERMAIN ---------- */
+function startBermain(){S.gi=0;S.gpts=[];S.gDetail=[];renderGame();show('bermain');}
+function renderGame(){
+  const i=S.gi,g=GAMES[i];
+  $('#gProg').style.width=(i/GAMES.length*100)+'%';
+  const cur=S.gpts.reduce((a,b)=>a+b,0);$('#gScore').textContent='Skor '+Math.round(cur);
+  const typeName={match:'Menjodohkan',order:'Mengurutkan',drop:'Drag & Drop',mcq:'Pilihan Ganda',multi:'PG Kompleks'}[g.type];
+  const c=$('#gCard');
+  c.innerHTML=`<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><span class="badge badge-gold">Tantangan ${i+1}/${GAMES.length}</span><span class="badge badge-teal">${typeName} · 10 poin</span></div>
+   <h2 style="color:var(--deep);margin-top:10px">${g.title}</h2>
+   <div class="stim"><h4>📌 Stimulus</h4>${g.stim}</div>
+   ${g.q?`<p><b>${g.q}</b></p>`:''}
+   <div id="gw"></div><div class="fb" id="gfb"></div>
+   <div class="nav"><span></span><button class="btn btn-gold" id="gCheck">✔ Periksa Jawaban</button></div>`;
+  const host=$('#gw');let w;
+  if(g.type==='match')w=wMatch(host,g);else if(g.type==='order')w=wOrder(host,g);
+  else if(g.type==='drop')w=makeDrop(host,g,()=>{});
+  else w=wChoice(host,g,g.type==='multi');
+  const fb=$('#gfb');
+  $('#gCheck').onclick=function(){
+    if(!w.ready()){fb.className='fb show info';fb.textContent='ℹ️ Lengkapi jawabanmu terlebih dahulu.';return;}
+    const f=w.score(),pts=Math.round(f*100)/10;
+    if(w.markResult)w.markResult();w.lock();
+    S.gpts[i]=pts;S.gDetail[i]={title:g.title,pts};
+    const tot=S.gpts.reduce((a,b)=>a+b,0);$('#gScore').textContent='Skor '+Math.round(tot);
+    const cls=f===1?'ok':(f>0?'info':'no');
+    fb.className='fb show '+cls;
+    fb.innerHTML=(f===1?'🎉 <b>Sempurna! +10 poin.</b>':f>0?`👍 <b>Sebagian benar: +${pts} poin.</b>`:'😅 <b>Belum tepat: +0 poin.</b>')+`<br><br><b>Jawaban yang benar:</b><br>${w.answer()}<br><br>💡 ${g.exp}`;
+    this.disabled=true;
+    const nx=el('button','btn btn-primary',i===GAMES.length-1?'Lihat Hasil 🏁':'Tantangan Berikutnya →');
+    this.parentNode.append(nx);
+    nx.onclick=()=>{if(i===GAMES.length-1)finishBermain();else{S.gi++;renderGame();window.scrollTo(0,0);}};
+  };
+}
+function finishBermain(){
+  const tot=Math.round(S.gpts.reduce((a,b)=>a+b,0));S.gTotal=tot;S.bermainDone=true;S.unl.berlatih=true;
+  $('#gProg').style.width='100%';$('#gScore').textContent='Skor '+tot;
+  const badge=tot>=90?'🏆 Juara K3':tot>=70?'🥇 Pahlawan Keselamatan':'💪 Semangat Terus';
+  $('#gCard').innerHTML=`<div style="text-align:center"><div style="font-size:3.4rem">🎮</div><h2 style="color:var(--deep)">Tantangan Selesai!</h2>
+   <div class="result-grid"><div class="rbox"><div class="n">${tot}</div><div class="muted small">Skor Bermain (dari 100)</div></div><div class="rbox"><div class="n" style="font-size:1.3rem;padding:8px 0">${badge}</div><div class="muted small">Predikat</div></div></div>
+   <p class="muted">Menu <b>BERLATIH</b> telah terbuka 🔓. Selamat, ${esc(S.nama)}!</p>
+   <button class="btn btn-primary" id="gMenu">Kembali ke Menu ☰</button></div>`;
+  $('#gMenu').onclick=()=>{toast('🎉 Menu BERLATIH terbuka!');renderMenu();show('menu');};
+}
+
+/* ---------- BERLATIH ---------- */
+function startBerlatih(){S.li=0;S.lans=LATIH.map(()=>null);renderLatih();show('berlatih');}
+function renderLatih(){
+  const i=S.li,q=LATIH[i],n=LATIH.length;
+  $('#lProg').style.width=((i+1)/n*100)+'%';$('#lCount').textContent=`Soal ${i+1}/${n}`;
+  const lvName=['','Level 1 · Pemahaman','Level 2 · Aplikasi','Level 3 · Penalaran HOTS'][q.lv];
+  const c=$('#lCard');
+  c.innerHTML=`<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><span class="lvl lv${q.lv}">${lvName}</span><span class="badge badge-teal">Bobot ${q.w} poin</span></div>
+   <div class="stim"><h4>📖 Stimulus Literasi-Numerasi</h4>${q.stim}</div>
+   <p><b>${i+1}. ${q.q}</b></p><div id="lw"></div>
+   <div class="nav"><button class="btn btn-ghost" id="lPrev" ${i===0?'disabled':''}>← Sebelumnya</button><button class="btn btn-primary" id="lNext" disabled>${i===n-1?'Selesai & Lihat Hasil ✔':'Simpan & Lanjut →'}</button></div>`;
+  const host=$('#lw');
+  q.opts.forEach((t,k)=>{const b=el('button','opt'+(S.lans[i]===k?' sel':''));b.type='button';b.innerHTML=`<b>${LET[k]}.</b> ${esc(t)}`;
+    b.onclick=()=>{S.lans[i]=k;$$('.opt',host).forEach((x,j)=>x.classList.toggle('sel',j===k));$('#lNext').disabled=false;};host.append(b);});
+  if(S.lans[i]!==null)$('#lNext').disabled=false;
+  $('#lPrev').onclick=()=>{S.li--;renderLatih();window.scrollTo(0,0);};
+  $('#lNext').onclick=()=>{if(i===n-1)finishLatih();else{S.li++;renderLatih();window.scrollTo(0,0);}};
+}
+function finishLatih(){
+  const lv={1:{b:0,t:0,s:0,m:0},2:{b:0,t:0,s:0,m:0},3:{b:0,t:0,s:0,m:0}};let total=0;
+  LATIH.forEach((q,i)=>{const L=lv[q.lv];L.t++;L.m+=q.w;if(S.lans[i]===q.ans){L.b++;L.s+=q.w;total+=q.w;}});
+  S.res={lv,total};S.latihDone=true;
+  const rev=LATIH.map((q,i)=>{const ok=S.lans[i]===q.ans;
+    return `<div class="review ${ok?'ok':'no'}"><b>${ok?'✅':'❌'} Soal ${i+1} (Level ${q.lv})</b><br>Jawabanmu: ${S.lans[i]===null?'-':LET[S.lans[i]]+'. '+esc(q.opts[S.lans[i]])}<br>Kunci: <b>${LET[q.ans]}. ${esc(q.opts[q.ans])}</b><br><span class="muted">💡 ${q.exp}</span></div>`;}).join('');
+  $('#lProg').style.width='100%';$('#lCount').textContent='Selesai';
+  $('#lCard').innerHTML=`<div style="text-align:center"><div style="font-size:3.2rem">📝</div><h2 style="color:var(--deep)">Hasil Berlatih</h2>
+   <div class="result-grid"><div class="rbox"><div class="n">${total}</div><div class="muted small">Nilai Total (dari 100)</div></div>
+   ${[1,2,3].map(k=>`<div class="rbox"><div class="n" style="font-size:1.5rem">${lv[k].s}/${lv[k].m}</div><div class="muted small">Level ${k} (${lv[k].b}/${lv[k].t} benar)</div></div>`).join('')}</div>
+   <div class="nav" style="justify-content:center;flex-wrap:wrap"><button class="btn btn-gold" id="lRep">📄 Lihat Laporan Hasil Belajar</button><button class="btn btn-ghost" id="lMenu">☰ Menu</button></div></div>
+   <h3 style="margin-top:20px;color:var(--teal)">Pembahasan</h3>${rev}`;
+  $('#lRep').onclick=()=>{renderReport();show('report');};
+  $('#lMenu').onclick=()=>{renderMenu();show('menu');};
+  window.scrollTo(0,0);
+}
+
+/* ---------- REPORT ---------- */
+function predikat(n){return n>=85?'Sangat Baik':n>=70?'Baik':n>=56?'Cukup':'Perlu Bimbingan';}
+function autoNote(total,lv){
+  const weak=[1,2,3].filter(k=>lv[k].s<lv[k].m*0.7).map(k=>['','Pemahaman (Level 1)','Aplikasi (Level 2)','Penalaran HOTS (Level 3)'][k]);
+  let t=`${S.nama} telah menyelesaikan seluruh tahapan pembelajaran K3 di ruang editing dengan predikat ${predikat(total)}. `;
+  t+=weak.length?`Disarankan mengulang materi dan latihan pada aspek ${weak.join(', ')}, serta membiasakan prosedur K3 (cek kabel, ergonomi, aturan 20-20-20, dan penggunaan APAR) dalam praktik. `:`Pemahaman konsep, penerapan, dan penalaran sudah baik. Pertahankan kebiasaan bekerja aman dan jadilah teladan K3 bagi teman. `;
+  return t+'Barakallahu fiik.';
+}
+function renderReport(){
+  const r=S.res||{lv:{1:{b:0,t:0,s:0,m:0},2:{b:0,t:0,s:0,m:0},3:{b:0,t:0,s:0,m:0}},total:0};
+  const tgl=new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+  const names=['','Level 1 – Pemahaman','Level 2 – Aplikasi','Level 3 – Penalaran (HOTS)'];
+  $('#sheet').innerHTML=`<div class="kop"><div class="logo">🛡️</div><div><h2>BLKK AL ISHLAH GORONTALO</h2><p>Balai Latihan Kerja Komunitas · Program Pelatihan Video Editor</p><p><b>LAPORAN HASIL BELAJAR – MEDIA PEMBELAJARAN INTERAKTIF K3</b></p></div></div>
+  <table><tr><th style="width:32%">Nama Peserta</th><td>${esc(S.nama)}</td></tr><tr><th>Kelas / Angkatan</th><td>${esc(S.kelas)}</td></tr>
+  <tr><th>Mata Pelajaran</th><td>Video Editor</td></tr><tr><th>Topik</th><td>Melaksanakan prosedur Keselamatan dan Kesehatan Kerja (K3) ditempat kerja</td></tr><tr><th>Tanggal</th><td>${tgl}</td></tr></table>
+  <h3 style="color:var(--teal)">A. Skor Bermain</h3>
+  <table><tr><th>Aspek</th><th class="c">Skor</th><th class="c">Predikat</th></tr><tr><td>10 Tantangan Gamifikasi</td><td class="c"><b>${S.gTotal}</b> / 100</td><td class="c">${predikat(S.gTotal)}</td></tr></table>
+  <h3 style="color:var(--teal)">B. Nilai Berlatih per Level</h3>
+  <table><tr><th>Level</th><th class="c">Benar</th><th class="c">Nilai</th></tr>
+  ${[1,2,3].map(k=>`<tr><td>${names[k]}</td><td class="c">${r.lv[k].b} / ${r.lv[k].t}</td><td class="c">${r.lv[k].s} / ${r.lv[k].m}</td></tr>`).join('')}
+  <tr><th>Nilai Akhir Berlatih</th><th class="c"></th><th class="c">${r.total} / 100 (${predikat(r.total)})</th></tr></table>
+  <h3 style="color:var(--teal)">C. Catatan Guru</h3>
+  <div class="note-box" contenteditable="true" spellcheck="false">${esc(autoNote(r.total,r.lv))}</div>
+  <div class="sign"><div>Peserta,<div class="sp"></div><b>${esc(S.nama)}</b></div><div>Gorontalo, ${tgl}<br>Instruktur / Guru Pengembang,<div class="sp"></div><b><u>Muhammad Fahri Akbar, S.Sos</u></b></div></div>`;
+}
+$('#btnPrint').onclick=()=>window.print();
+})();
+</script>
+</body>
+</html>
